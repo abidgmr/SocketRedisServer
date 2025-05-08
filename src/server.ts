@@ -1,7 +1,6 @@
 "use strict";
 import "reflect-metadata";
 import dotenv from "dotenv";
-import Redis from "ioredis";
 
 dotenv.config();
 import './connection/index';
