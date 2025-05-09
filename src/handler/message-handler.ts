@@ -6,16 +6,17 @@ const handleMessage = async (channel: string, message: string) => {
     const payload = JSON.parse(message);
     console.log(`Received message on ${channel}: ${JSON.stringify(payload)}`);
 
-    if (payload.responseChannel) {
-      const responsePayload: PubSubMessage = {
-        id: payload.id,
-        channel: payload.responseChannel,
-        timestamp: Date.now(),
-        payload: `Acknowledgment for ${payload.id}`,
-      };
+    const response: Partial<PubSubMessage> = {};
+    (response.id = payload.id),
+      (response.timestamp = Date.now()),
+      (response.payload = `Acknowledgment for ${payload.id}`);
 
-      await publisher.publish(payload.responseChannel, JSON.stringify(responsePayload));
-    }
+    if (payload.responseChannel) {
+      (response.channel = payload.responseChannel),
+        (response.status = "acknowledged");
+
+      await publisher.publish("acknowledgment", JSON.stringify(response));
+    } 
   } catch (error) {
     console.error("Error processing message:", error);
   }

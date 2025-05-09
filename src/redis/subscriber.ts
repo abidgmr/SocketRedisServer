@@ -10,4 +10,12 @@ subscriber.subscribe(ChatEventEnum.NEW_CHAT_EVENT, (err, count) => {
   console.log(`Subscribed to ${count} channel(s).`);
 });
 
+subscriber.subscribe("acknowledgment", (err, count) => {
+  if (err) {
+    console.error("Subscription error:", err);
+    return;
+  }
+  console.log(`Subscribed to ${count} channel(s).`);
+});
+
 subscriber.on("message", handleMessage);

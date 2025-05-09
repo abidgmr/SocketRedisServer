@@ -10,13 +10,29 @@ import path from "path";
 import session from "express-session";
 import { authentication } from "./middleware/authentication.middleware";
 import dotenv from "dotenv";
+import cors from "cors";
+import limiter from "./helper/limiter";
 
 const app: Express = express();
 
 dotenv.config();
 const publicPath = path.join(__dirname, "../public");
+
+app.get("/", (req, res) => {
+  res.send("Welcome to redis kafka server");
+});
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    allowedHeaders: ["clientid", "authorization"],
+    methods: ["GET", "PUT", "POST", "DELETE", "PATCH"],
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(clientIdMiddleware);
 app.use(requestIp.mw());
+app.use(limiter);
 app.use(
   session({
     secret: process.env.JWT_SECRET || "",
