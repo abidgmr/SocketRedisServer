@@ -1,21 +1,20 @@
-import publish from "../redis/publisher";
+import { publisher } from "../connection";
+import PubSubMessage from "../types";
 
 const handleMessage = async (channel: string, message: string) => {
   try {
-    const { message: msg, responseChannel } = JSON.parse(message);
+    const payload = JSON.parse(message);
+    console.log(`Received message on ${channel}: ${JSON.stringify(payload)}`);
 
-    console.log(`Received message on ${channel}:`, msg, responseChannel);
+    if (payload.responseChannel) {
+      const responsePayload: PubSubMessage = {
+        id: payload.id,
+        channel: payload.responseChannel,
+        timestamp: Date.now(),
+        payload: `Acknowledgment for ${payload.id}`,
+      };
 
-    if (responseChannel) {
-      try {
-        const status = await publish(
-          responseChannel,
-          `Message received on 2 ${channel}`
-        );
-        if (status) {
-          console.log(`Response published on channel: ${channel}`);
-        }
-      } catch (error) {}
+      await publisher.publish(payload.responseChannel, JSON.stringify(responsePayload));
     }
   } catch (error) {
     console.error("Error processing message:", error);
@@ -23,5 +22,3 @@ const handleMessage = async (channel: string, message: string) => {
 };
 
 export default handleMessage;
-
-

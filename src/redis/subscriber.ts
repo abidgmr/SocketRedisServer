@@ -1,17 +1,8 @@
 import { subscriber } from "../connection";
 import handleMessage from "../handler/message-handler";
+import { ChatEventEnum } from "../socket/constant";
 
-
-// Subscriber for redis publisher
-subscriber.subscribe("message", (err, count) => {
-  if (err) {
-    console.error("Subscription error:", err);
-    return;
-  }
-  console.log(`Subscribed to ${count} channel(s).`);
-});
-
-subscriber.subscribe("group", (err, count) => {
+subscriber.subscribe(ChatEventEnum.NEW_CHAT_EVENT, (err, count) => {
   if (err) {
     console.error("Subscription error:", err);
     return;
@@ -20,4 +11,3 @@ subscriber.subscribe("group", (err, count) => {
 });
 
 subscriber.on("message", handleMessage);
-// subscriber.on("group", handleMessage);

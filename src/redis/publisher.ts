@@ -1,37 +1,64 @@
 import { publisher } from "../connection";
 import { v4 as uuidv4 } from "uuid";
+import PubSubMessage from "../types";
 
-const publish = async (channel: string, message: string | Buffer) => {
+const publish = (channel: string, message: string | Buffer) => {
   return new Promise((resolve, reject) => {
-    const responseChannel = `${channel}:response:${uuidv4()}`;
+    const id = uuidv4();
+    const responseChannel = `${channel}:responses`;
 
-    const payload = JSON.stringify({
-      message,
+    const payload: PubSubMessage = {
+      id,
+      channel,
+      timestamp: Date.now(),
+      payload: message,
       responseChannel,
-    });
+    };
 
     const responseSubscriber = publisher.duplicate();
-    responseSubscriber.subscribe(responseChannel, (err, count) => {
+
+    responseSubscriber.subscribe(responseChannel, (err) => {
       if (err) {
         reject(`Error subscribing to response channel: ${err.message}`);
         return;
       }
     });
 
-    responseSubscriber.on("message", (channel, response) => {
-      resolve(`Acknowledgment received: ${response} from channel ${channel}`);
-      responseSubscriber.unsubscribe(responseChannel);
-      responseSubscriber.quit();
-    });
+    responseSubscriber.on("message", (respChannel, response) => {
+      try {
+        const parsed = JSON.parse(response) as PubSubMessage;
 
-    publisher.publish(channel, payload, (err, numSubscribers) => {
-      console.log(`1 Publish to ${channel} with ${payload} `);
-      if (err) {
-        reject(`Error publishing message: ${err.message}`);
-      } else if (numSubscribers === 0) {
-        reject("No subscribers available");
+        if (parsed.id === id) {
+          resolve(`Acknowledgment received for ID ${id}: ${parsed.payload}`);
+          responseSubscriber.unsubscribe(responseChannel);
+          responseSubscriber.quit();
+        }
+      } catch (err) {
+        reject(`Error processing response: ${err}`);
       }
     });
+
+    let errorStatus = false;
+    publisher.publish(
+      channel,
+      JSON.stringify(payload),
+      (err, numSubscribers) => {
+        if (err) {
+          errorStatus = true;
+          reject(`Error publishing message: ${err.message}`);
+        } else if (numSubscribers === 0) {
+          errorStatus = true;
+          reject("No subscribers available");
+        }
+      }
+    );
+
+    if (!errorStatus)
+      console.log(
+        `Published message on channel: ${channel} with payload: ${JSON.stringify(
+          payload
+        )}`
+      );
   });
 };
 
