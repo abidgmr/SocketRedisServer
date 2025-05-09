@@ -6,8 +6,9 @@ import CustomError from "../exceptions/custom-error";
 import { CurrentUserDto } from "../dtos/UserDto";
 import UnauthorizedError from "../exceptions/unauthorized-error";
 import publish from "../redis/publisher";
+import incomingEvent from "../events/incoming";
 
-interface ExtendedSocket extends Socket {
+export interface ExtendedSocket extends Socket {
   user?: CurrentUserDto;
 }
 
@@ -109,12 +110,6 @@ export class SocketServer {
   }
 
   private handleIncomingEvents(socket: ExtendedSocket): void {
-    socket.on(ChatEventEnum.NEW_CHAT_EVENT, (payload: any) => {
-      if (payload && payload.chatId) {
-        // Publishing the message to redis
-        publish(ChatEventEnum.NEW_CHAT_EVENT, payload);
-        this.io.to(payload.chatId).emit(ChatEventEnum.NEW_CHAT_EVENT, payload);
-      }
-    });
+    incomingEvent(socket, this.io);
   }
 }

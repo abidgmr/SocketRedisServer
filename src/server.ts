@@ -37,7 +37,6 @@ app.use((req, _res, next) => {
 
 const httpServer = http.createServer(app);
 const socketServer = new SocketServer();
-
 const io = new SocketIOServer(httpServer, {
   pingTimeout: 60000,
   cors: {
@@ -71,7 +70,7 @@ process.on("SIGTERM", () => {
   httpServer.close(() => process.exit(0));
 });
 
-import "./connection/index";
+import "./connection/redis";
 import "./redis/subscriber";
 import "./redis/publisher";
 import "./socket-redis/index";

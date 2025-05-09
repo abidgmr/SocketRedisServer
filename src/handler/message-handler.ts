@@ -1,4 +1,4 @@
-import { publisher } from "../connection";
+import { publisher } from "../connection/redis";
 import PubSubMessage from "../types";
 
 const handleMessage = async (channel: string, message: string) => {

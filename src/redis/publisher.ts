@@ -1,4 +1,4 @@
-import { publisher } from "../connection";
+import { publisher } from "../connection/redis";
 import { v4 as uuidv4 } from "uuid";
 import PubSubMessage from "../types";
 

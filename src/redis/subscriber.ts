@@ -1,4 +1,4 @@
-import { subscriber } from "../connection";
+import { subscriber } from "../connection/redis";
 import handleMessage from "../handler/message-handler";
 import { ChatEventEnum } from "../socket/constant";
 
