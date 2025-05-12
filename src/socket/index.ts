@@ -6,7 +6,7 @@ import CustomError from "../exceptions/custom-error";
 import { CurrentUserDto } from "../dtos/UserDto";
 import UnauthorizedError from "../exceptions/unauthorized-error";
 import publish from "../redis/publisher";
-import incomingEvent from "../events/incoming";
+import incomingEvent from "../events/redis/incoming";
 
 export interface ExtendedSocket extends Socket {
   user?: CurrentUserDto;

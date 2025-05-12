@@ -90,5 +90,10 @@ import "./connection/redis";
 import "./redis/subscriber";
 import "./redis/publisher";
 import "./socket-redis/index";
+import "./connection/kafka";
+import "./events/kafka/index";
+import "./kafka/consumer";
+import "./kafka/producer";
+import "./kafka-consumers/index";
 
 export const getSocketServer = (): SocketServer => socketServer;

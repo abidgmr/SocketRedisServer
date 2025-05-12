@@ -1,11 +1,12 @@
 import { publisher } from "../connection/redis";
+import kafkaProducer from "../kafka/producer";
 import PubSubMessage from "../types";
 
 const handleMessage = async (channel: string, message: string) => {
   try {
     const payload = JSON.parse(message);
     console.log(`Received message on ${channel}: ${JSON.stringify(payload)}`);
-
+    kafkaProducer(channel, message);
     const response: Partial<PubSubMessage> = {};
     (response.id = payload.id),
       (response.timestamp = Date.now()),

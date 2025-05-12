@@ -1,6 +1,6 @@
-import publish from "../redis/publisher";
-import { ExtendedSocket } from "../socket";
-import { ChatEventEnum } from "../socket/constant";
+import publish from "../../redis/publisher";
+import { ExtendedSocket } from "../../socket";
+import { ChatEventEnum } from "../../socket/constant";
 import { Server as SocketIOServer } from "socket.io";
 
 const event = (
